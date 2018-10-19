@@ -1,0 +1,13 @@
+Options +FollowSymLinks -MultiViews
+
+DirectoryIndex index.php
+
+RewriteEngine On
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^(.*)$ index.php?/$1
+
+IndexIgnore *
+
+<Limit GET POST PUT DELETE>
+  Allow from all
+</Limit>

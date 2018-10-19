@@ -1,0 +1,90 @@
+table,
+th,
+td {
+  border: 1px solid black;
+  border-collapse: collapse;
+  padding: 5px;
+  text-align: center;
+}
+body {
+  background-color: lightgray;
+}
+.boxes {
+  margin: 0 auto;
+  width: 100%;
+  max-width: 800px;
+}
+.boxes div {
+  height: 30px;
+  width: 30%;
+  max-width: 250px;
+  display: inline-block;
+  border-radius: 10px;
+  border: 1px solid;
+  margin-right: 10px;
+  box-shadow: 3px 3px 6px black;
+}
+.boxes div:last-child {
+  margin-right: 0px;
+}
+.boxes div > span {
+  padding-left: 5px;
+  border-radius: 0 9px 9px 0;
+  line-height: 30px;
+}
+.boxes div > span.red {
+  color: red;
+}
+.boxes div > span.blue {
+  color: cadetblue;
+}
+.boxes div > span.green {
+  color: chartreuse;
+}
+.boxes div .data {
+  float: right;
+  width: 30px;
+  background: #000;
+  color: green;
+  text-align: center;
+}
+.mainData {
+  margin: 30px auto;
+  width: 100%;
+  max-width: 600px;
+}
+.mainData table th,
+.mainData table td {
+  width: 20%;
+}
+.mainData button {
+  cursor: pointer;
+  font-size: 12px;
+  padding: 1px 4px;
+  background: blue;
+  color: #fff;
+  font-weight: bold;
+  border-radius: 3px;
+  border: 0.3px solid black;
+  box-shadow: 3px 3px 6px black;
+}
+.task {
+  margin: 0 auto;
+  width: 100%;
+  max-width: 800px;
+}
+.task .title {
+  font-size: 20px;
+  text-align: center;
+}
+.task label,
+.task input,
+.task textarea,
+.task select {
+  display: block;
+}
+.task input,
+.task textarea,
+.task select {
+  margin-bottom: 10px;
+}
