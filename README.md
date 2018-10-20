@@ -10,4 +10,4 @@ Default path:
 http://localhost/tasks
 
 DB located in:
-tasks/tasks.sql
+tasks/dolce.sql
