@@ -26,7 +26,7 @@ class RouteController extends Controller {
         $this->klein->respond('GET', '/', function () {
             $this->Task = new \Con\Task\TaskController($this->db);
             $this->Task->total();
-            $this->Task->list();
+            $this->Task->listTasks();
  /*           $this->Task->TaskExecute();
             $this->Task->getUsers();
             $this->Task->getCountries();*/
@@ -38,13 +38,37 @@ class RouteController extends Controller {
             header('Content-Type: application/json');
             $this->Task = new \Con\Task\TaskController($this->db);
 
-            $usr = $_POST['usr'] ?? '';
-            $cnt = $_POST['cnt'] ?? '';
-            $from = $_POST['from'] ?? '';
-            $to = $_POST['to'] ?? '';
+            $act = $_POST['act'] ?? '';
+            $id = $_POST['id'] ?? '';
+            $name = $_POST['name'] ?? '';
+            $desc = $_POST['desc'] ?? '';
+            $status = $_POST['status'] ?? '';
 
-            $agrLog = $this->Task->getAgrLog($from, $to, $usr, $cnt);
-            echo json_encode($agrLog);
+            switch($act){
+                case 'list':
+                    $res = $this->Task->getList();
+                break;
+
+                case 'total':
+                    $res = $this->Task->getTotal();
+                break;
+
+                case 'del':
+                    $res = $this->Task->del($id);
+                break;
+
+                case 'create':
+                    $res = $this->Task->create($name,$desc,$status);
+                break;
+
+                case 'edit':
+                    $res = $this->Task->edit($id,$desc,$status);
+                break;
+            }
+            echo json_encode($res);
+
+/*            $agrLog = $this->Task->getAgrLog($from, $to, $usr, $cnt);
+            echo json_encode($agrLog);*/
         });
 
         /** Invoke Routing */

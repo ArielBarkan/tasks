@@ -13,24 +13,30 @@ final class TaskController implements \Controller{
         $this->db = $db;
     }
 
-    public function TaskExecute()
+    public function getTotal($id='')
     {
-        $this->send_log_aggregated();
+        return $this->total($id);
     }
 
-    public function getAgrLog($from='', $to='', $usr='', $cnt='')
+    public function getList($id='')
     {
-        return $this->agrLog($from, $to, $usr, $cnt);
+        return $this->listTasks($id);
     }
 
-    public function getUsers()
+    public function del($id='')
     {
-        return $this->listUsers();
+        return $this->deleteTask($id);
     }
 
-    public function getCountries()
+    public function create($name='', $desc='', $status='')
     {
-        return $this->listCountries();
+        return $this->createTask($name, $desc, $status);
     }
+
+    public function edit($id='', $desc='', $status='')
+    {
+        return $this->editTask($id, $desc, $status);
+    }
+
 
 }

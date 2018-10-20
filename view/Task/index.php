@@ -10,15 +10,15 @@ $t_Task = $route->Task;
 <link rel="stylesheet" href="view/Task/style.css">
 
 <div class="boxes">
-    <div>
+    <div class="total count">
         <span class="title">Total Tasks</span>
         <span class="data blue"><?=$t_Task->res['total']['count']?></span>
     </div>
-    <div>
+    <div class="total completed">
         <span class="title">Completed Tasks</span>
         <span class="data green"><?=$t_Task->res['total']['completed']?></span>
     </div>
-    <div>
+    <div class="total remaining">
         <span class="title">Remaining Tasks</span>
         <span class="data red"><?=$t_Task->res['total']['remaining']?></span>
     </div>
@@ -35,24 +35,8 @@ $t_Task = $route->Task;
             <th><button class="create">Add New Task +</button></th>
         </tr>
         </thead>
-        <tbody>
-        <?php
-        foreach($t_Task->res['list'] as $v){
-            ?>
-            <tr>
-                <td class="id"><?=$v['id']?></td>
-                <td class="name"><?=$v['name']?></td>
-                <td class="date"><?=$v['date']?></td>
-                <td class="desc" style="display: none"><?=$v['description']?></td>
-                <td class="status" style="display: none"><?=$v['status']?></td>
-                <td><a class="edit" href="">Edit</a> / <a class="edit" href="">Delete</a></td>
-                <td></td>
-            </tr>
+        <tbody class="fetchList">
 
-            <?
-        }
-
-        ?>
 
 
         </tbody>
@@ -62,7 +46,6 @@ $t_Task = $route->Task;
 <div class="task" style="display: none">
     <div class="title"></div>
     <form action="?" method="POST">
-        <input type="hidden" name="id" value="1">
         <label>Name:</label> <input type="text" name="title">
         <label>Description:</label>
         <textarea name="desc" cols="30" rows="10"></textarea>

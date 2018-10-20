@@ -12,192 +12,152 @@ trait TaskModel{
 
     public function total()
     {
+        $res['total'] = array();
+        $res['total']['completed'] = $res['total']['remaining'] = 0;
         $sql = "SELECT status FROM tasks";
 
-        $this->db->stmt = $this->db->pdo->prepare($sql);
-        $this->db->stmt->execute();
-
-        $this->res['total']['count'] = $this->db->stmt->rowCount();
-        $this->res['total']['completed'] = $this->res['total']['remaining'] = 0;
-
-        if($this->db->stmt->rowCount() == 0){
-            $this->res['total'] = array();
+        try{
+            $this->db->stmt = $this->db->pdo->prepare($sql);
+            $this->db->stmt->execute();
+        } catch (\Exception $e) {
+            $res['err'] = 1;
         }
-        else{
 
-            foreach($this->db->stmt->fetchAll() as $k=>$v){
+        $res['total']['count'] = $this->db->stmt->rowCount();
+
+        if($this->db->stmt->rowCount() != 0){
+
+            foreach($this->db->stmt->fetchAll(\PDO::FETCH_ASSOC) as $k=>$v){
                 switch($v['status']){
                     case 1:
                     case 2:
                     case 3:
                     case 4:
-                        $this->res['total']['remaining']++;
+                        $res['total']['remaining']++;
                     break;
 
                     case 5:
-                        $this->res['total']['completed']++;
+                        $res['total']['completed']++;
                     break;
                 }
 
             }
         }
+        return $res;
     }
 
-    public function list()
+    public function listTasks()
     {
-           $sql = "SELECT * FROM tasks";
+       $sql = "SELECT * FROM tasks";
 
-       $this->db->stmt = $this->db->pdo->prepare($sql);
-       $this->db->stmt->execute();
+        try{
+            $this->db->stmt = $this->db->pdo->prepare($sql);
+            $this->db->stmt->execute();
+        } catch (\Exception $e) {
+            $res['err'] = 1;
+            $res['msg'] = 'There was an error.';
+        }
 
        if($this->db->stmt->rowCount() == 0){
-           $this->res['list'] = array();
+           $res['list'] = array();
        }
        else{
-           $this->res['list'] = $this->db->stmt->fetchAll();
+           $res['list'] = $this->db->stmt->fetchAll(\PDO::FETCH_ASSOC);
        }
+
+       return $res;
     }
 
-    // Insert data to "send_log_aggregated" and then delete data from "send_log"
-    public function send_log_aggregated()
+    public function deleteTask($id)
     {
-/*        // Insert
-        $sql = '
-            INSERT INTO `send_log_aggregated` 
-            
-            SELECT 
-            ""
-            ,log.usr_id
-            ,numbers.cnt_id
-            ,log.log_created
-            ,SUM(IF(log.log_success = 1,1,0))
-            ,SUM(IF(log.log_success = 0,1,0))
-            
-            FROM send_log AS log
-            
-            LEFT JOIN numbers ON numbers.num_id = log.num_id
-            LEFT JOIN countries ON countries.cnt_id = numbers.cnt_id
-            
-            GROUP BY log.usr_id, numbers.cnt_id
-        ';
+        $sql = "DELETE FROM tasks WHERE id = :id";
 
-        $this->db->stmt = $this->db->pdo->prepare($sql);
-        $this->db->stmt->execute();
+        $bindParams[':id'] =  $id;
 
-        // Delete
-        $this->db->stmt = $this->db->pdo->prepare('DELETE FROM send_log');
-        $this->db->stmt->execute();*/
+        try{
+            $this->db->stmt = $this->db->pdo->prepare($sql);
+            $this->db->stmt->execute($bindParams);
+        } catch (\Exception $e) {
+            $res['status'] = 0;
+            $res['msg'] = 'There was a problem.';
+        }
 
+        $sql = "SELECT id FROM tasks WHERE id = :id";
+
+        try{
+            $this->db->stmt = $this->db->pdo->prepare($sql);
+            $this->db->stmt->execute($bindParams);
+            $exists = $this->db->stmt->fetch();
+        } catch (\Exception $e) {
+            $res['status'] = 0;
+            $res['msg'] = 'There was a problem.';
+        }
+
+        if(is_array($exists)){
+            $res['status'] = 0;
+            $res['msg'] = 'There was a problem.';
+        }
+        else{
+            $res['status'] = 1;
+            $res['msg'] = 'The task has been removed.';
+        }
+
+        return $res;
     }
 
-    protected function listUsers(){
-     /*   $sql = "
-            SELECT 
-            usr_id `id`
-            ,usr_name `title`
-            
-            FROM users
+    public function createTask($name, $desc, $status)
+    {
+        $sql = "
+            INSERT INTO tasks 
+            (`name`, `description`, `status`, `date`)
+            VALUES(:name, :desc, :status, NOW())
         ";
 
-        $this->db->stmt = $this->db->pdo->prepare($sql);
-        $this->db->stmt->execute();
+        $bindParams[':name'] =  $name;
+        $bindParams[':desc'] =  $desc;
+        $bindParams[':status'] =  $status;
 
-        if($this->db->stmt->rowCount() == 0){
-            $this->res['usr'] = array();
+        try{
+            $this->db->stmt = $this->db->pdo->prepare($sql);
+            $this->db->stmt->execute($bindParams);
+            $res['status'] = 1;
+            $res['msg'] = 'The task has been added.';
+
+        } catch (\Exception $e) {
+            $res['status'] = 0;
+            $res['msg'] = 'There was a problem.';
         }
-        else{
-            $this->res['usr'] = $this->db->stmt->fetchAll();
-        }*/
+
+        return $res;
     }
 
-    protected function listCountries(){
-    /*    $sql = "
-            SELECT 
-            cnt_code `id`
-            ,cnt_title `title`
-            
-            FROM countries
-        ";
-
-        $this->db->stmt = $this->db->pdo->prepare($sql);
-        $this->db->stmt->execute();
-
-        if($this->db->stmt->rowCount() == 0){
-            $this->res['cnt'] = array();
-        }
-        else{
-            $this->res['cnt'] = $this->db->stmt->fetchAll();
-        }*/
-    }
-
-    // Getting information from the new aggregated log
-    protected function agrLog($from='', $to='', $usr='', $cnt='') {
-
-        /*$bindParams = [];
-        $where = [];
-        $groupBy = [];
-
-        if(empty($from) || empty($to)){
-            $this->res['check'] = false;
-            $this->res['error'] = 'You Need to Select `Start Date` and `End Date`.';
-            return $this->res;
-        }
-        else{
-            $this->res['check'] = true;
-            $bindParams[':from'] =  $from;
-            $bindParams[':to'] =  $to;
-        }
-
-
-
-        if(!empty($cnt)){
-            $where[] = "agr.cnt_id = :cnt";
-            $groupBy[] = "agr.cnt_id";
-            $bindParams[':cnt'] =  $cnt;
-        }
-
-        if(!empty($usr)){
-            $where[] = "agr.usr_id = :usr";
-            $groupBy[] = "agr.usr_id";
-            $bindParams[':usr'] =  $usr;
-        }
+    public function editTask($id, $desc, $status)
+    {
 
         $sql = "
-            SELECT 
-            agr.day `date`
-            ,IF(SUM(agr.sent)>0,FORMAT(SUM(agr.sent),0),'-') `success`
-            ,IF(SUM(agr.failed)>0,FORMAT(SUM(agr.failed),0),'-') `failed`
-            
-            FROM send_log_aggregated AS agr
-            
-            WHERE agr.day >= :from AND agr.day <= :to
-          
-            
+            UPDATE tasks 
+            SET `description` = :desc, `status` = :status, `date` = NOW()
+            WHERE id = :id
         ";
 
-        if(!empty($where)){
-            $sql.= 'AND '.implode($where,' AND ');
+        $bindParams[':id'] =  $id;
+        $bindParams[':desc'] =  $desc;
+        $bindParams[':status'] =  $status;
+
+        try{
+            $this->db->stmt = $this->db->pdo->prepare($sql);
+            $this->db->stmt->execute($bindParams);
+            $res['status'] = 1;
+            $res['msg'] = 'The task has been updated.';
+
+        } catch (\Exception $e) {
+            $res['status'] = 0;
+            $res['msg'] = 'There was a problem.';
         }
 
-        $sql.= ' GROUP BY agr.day ';
-
-        if(!empty($groupBy)){
-            $sql.= ','.implode($groupBy,',');
-        }
-
-
-        $this->db->stmt = $this->db->pdo->prepare($sql);
-        $this->db->stmt->execute($bindParams);
-
-        if($this->db->stmt->rowCount() == 0){
-            $this->res['data'] = array();
-        }
-        else{
-            $this->res['data'] = $this->db->stmt->fetchAll();
-        }
-
-        return $this->res;*/
+        return $res;
     }
+
 
 
 }
