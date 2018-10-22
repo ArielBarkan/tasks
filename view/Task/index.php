@@ -1,5 +1,4 @@
 <?php
-//todo: change all smsreport to task
 $t_Task = $route->Task;
 ?>
 <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
