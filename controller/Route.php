@@ -27,13 +27,12 @@ class RouteController extends Controller {
             $this->Task = new \Con\Task\TaskController($this->db);
             $this->Task->total();
             $this->Task->listTasks();
- /*           $this->Task->TaskExecute();
-            $this->Task->getUsers();
-            $this->Task->getCountries();*/
+
 
             $this->viewFile = 'Task/index.php';
         });
 
+        // Ajax
         $this->klein->respond('POST', '/Task', function ($request, $response) {
             header('Content-Type: application/json');
             $this->Task = new \Con\Task\TaskController($this->db);
@@ -66,9 +65,6 @@ class RouteController extends Controller {
                 break;
             }
             echo json_encode($res);
-
-/*            $agrLog = $this->Task->getAgrLog($from, $to, $usr, $cnt);
-            echo json_encode($agrLog);*/
         });
 
         /** Invoke Routing */
